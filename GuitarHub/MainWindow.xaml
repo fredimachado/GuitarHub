@@ -16,8 +16,8 @@
         Title="Guitar Hub" Height="480" Width="1530">
     <StackPanel>
         <StackPanel Orientation="Horizontal">
-            <ComboBox Name="Notes" materialDesign:HintAssist.Hint="Note" Margin="10"></ComboBox>
-            <ComboBox Name="Scales" materialDesign:HintAssist.Hint="Scale" Margin="10"></ComboBox>
+            <ComboBox Name="Notes" Margin="10"></ComboBox>
+            <ComboBox Name="Scales" Margin="10"></ComboBox>
             <Button Margin="10" Click="Button_Click">OK</Button>
         </StackPanel>
         <StackPanel Name="Fretboard">
