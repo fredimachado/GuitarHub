@@ -1,5 +1,12 @@
-resources:
-- repo: self
+name: $(Rev:r)
+
+trigger:
+  tags:
+    include:
+    - v*
+  branches:
+    include:
+    - '*'
 
 pool:
   name: Hosted Windows 2019 with VS2019
@@ -18,6 +25,9 @@ steps:
   displayName: 'NuGet restore'
   inputs:
     restoreSolution: '**\*.sln'
+
+- powershell: '.\SetVersion.ps1'
+  displayName: 'Set Assembly Version'
 
 - task: VSBuild@1
   displayName: 'Build solution **\*.sln'
@@ -42,16 +52,39 @@ steps:
     PublishSymbols: false
   continueOnError: true
 
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+- task: ArchiveFiles@2
+  displayName: 'Zip and stage build artifacts'
   inputs:
-    SourceFolder: '$(system.defaultworkingdirectory)'
-    Contents: '**\bin\$(BuildConfiguration)\**'
-    TargetFolder: '$(build.artifactstagingdirectory)'
-  condition: succeededOrFailed()
+    rootFolderOrFile: '$(system.defaultworkingdirectory)\GuitarHub\bin\$(BuildConfiguration)' 
+    archiveFile: '$(Build.ArtifactStagingDirectory)\GuitarHub.zip' 
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)'
   condition: succeededOrFailed()
+
+- task: GitHubRelease@0
+  displayName: 'Create GitHub Draft Release'
+  inputs:
+    gitHubConnection: 'GitHub connection 1'
+    repositoryName: $(Build.Repository.Name)
+    tagSource: manual
+    tag: 'untagged-$(Build.SourceVersion).$(Build.BuildNumber)'
+    title: '$(Build.BuildId)-$(Build.SourceBranchName)'
+    releaseNotesSource: input
+    releaseNotes: 'Based on commit: $(Build.SourceVersion)'
+    isDraft: true
+    addChangeLog: true
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
+
+- task: GitHubRelease@0
+  displayName: 'Create GitHub Release'
+  inputs:
+    gitHubConnection: 'GitHub connection 1'
+    repositoryName: $(Build.Repository.Name)
+    tagSource: manual
+    tag: '$(Build.SourceBranchName)'
+    isDraft: false
+    addChangeLog: true
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
