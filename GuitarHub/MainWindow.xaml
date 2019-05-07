@@ -13,14 +13,24 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Guitar Hub" Height="480" Width="1530">
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
+        Title="Guitar Hub v{version} by Fredi Machado" Height="515" MinHeight="515" Width="1530">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="52"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
             <ComboBox Name="Notes" Margin="10"></ComboBox>
             <ComboBox Name="Scales" Margin="10"></ComboBox>
             <Button Margin="10" Click="Button_Click">OK</Button>
         </StackPanel>
-        <StackPanel Name="Fretboard">
+        <StackPanel Name="Fretboard" Grid.Row="1">
         </StackPanel>
-    </StackPanel>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="2">
+            <TextBlock Margin="10 0 0 0">
+                <Hyperlink NavigateUri="https://github.com/fredimachado/GuitarHub" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/fredimachado/GuitarHub</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
 </Window>

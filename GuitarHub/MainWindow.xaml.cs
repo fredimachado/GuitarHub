@@ -1,7 +1,9 @@
 ﻿using MaterialDesignColors;
 using Music.Core;
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -21,6 +23,9 @@ namespace GuitarHub
         public MainWindow()
         {
             InitializeComponent();
+
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Title = Title.Replace("{version}", version);
 
             FillNotes();
             FillScales();
@@ -259,6 +264,12 @@ namespace GuitarHub
             var scaleType = ScaleEnumerator.ScaleTypes.First(x => x.Name.ToLowerInvariant().StartsWith(scale.ToLowerInvariant()));
 
             return (ScaleBase)Activator.CreateInstance(scaleType, rootNote);
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
     }
 }
