@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Fredi Machado")]
 [assembly: AssemblyProduct("GuitarHub")]
-[assembly: AssemblyCopyright("Copyright ©  2019 - Fredi Machado")]
+[assembly: AssemblyCopyright("Copyright © Fredi Machado")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
