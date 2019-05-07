@@ -70,6 +70,8 @@ steps:
   inputs:
     gitHubConnection: 'GitHub connection 1'
     repositoryName: $(Build.Repository.Name)
+    assets: '$(Build.ArtifactStagingDirectory)/*'
+    assetUploadMode: 'delete'
     tagSource: manual
     tag: 'untagged-$(Build.SourceVersion).$(Build.BuildNumber)'
     title: '$(Build.BuildId)-$(Build.SourceBranchName)'
@@ -84,6 +86,8 @@ steps:
   inputs:
     gitHubConnection: 'GitHub connection 1'
     repositoryName: $(Build.Repository.Name)
+    assets: '$(Build.ArtifactStagingDirectory)/*'
+    assetUploadMode: 'delete'
     tagSource: manual
     tag: '$(Build.SourceBranchName)'
     isDraft: false
