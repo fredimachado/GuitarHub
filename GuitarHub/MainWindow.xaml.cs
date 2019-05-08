@@ -1,5 +1,4 @@
-﻿using MaterialDesignColors;
-using Music.Core;
+﻿using Music.Core;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -20,12 +19,19 @@ namespace GuitarHub
 
         private Note selectedNote;
 
+        private readonly Style NoteButtonStyle;
+        private readonly SolidColorBrush PrimaryBackgroundColorBrush;
+        private readonly SolidColorBrush NoteNotInScaleBrush = new SolidColorBrush(Color.FromRgb(60, 60, 60));
+
         public MainWindow()
         {
             InitializeComponent();
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Title = Title.Replace("{version}", version);
+
+            NoteButtonStyle = FindResource("NoteButton") as Style;
+            PrimaryBackgroundColorBrush = FindResource("PrimaryBackgroundColorBrush") as SolidColorBrush;
 
             FillNotes();
             FillScales();
@@ -151,7 +157,7 @@ namespace GuitarHub
             noteButton.Background = Brushes.DimGray;
             noteButton.BorderBrush = Brushes.Transparent;
 
-            if (!scale.Notes.Any(x => x.Note == note))
+            if (!scale.Notes.Any(x => x.Note == scaleNote.Note))
             {
                 noteButton.ToolTip = noteButton.Content;
                 noteButton.Background = Brushes.Transparent;
@@ -159,14 +165,9 @@ namespace GuitarHub
                 noteButton.Foreground = Brushes.Transparent;
             }
 
-            var swatchesProvider = new SwatchesProvider();
-
-            var swatch = swatchesProvider.Swatches.FirstOrDefault(
-                s => string.Compare(s.Name, "DeepPurple", StringComparison.InvariantCultureIgnoreCase) == 0);
-
-            if (note == selectedNote && swatch != null)
+            if (scaleNote.Note == selectedNote)
             {
-                noteButton.Background = new SolidColorBrush(swatch.ExemplarHue.Color);
+                noteButton.Background = PrimaryBackgroundColorBrush;
             }
 
             stringStackPanel.Children.Add(noteButton);
