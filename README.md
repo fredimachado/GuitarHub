@@ -11,7 +11,7 @@ Your Guitar Scales App
 
 ## How to Install
 
-At the moment you can only find compiled binaries of GuitarHub in the [releases](https://github.com/fredimachado/GuitarHub/releases) page, but an installer will be created in the future.
+At the moment you can only find compiled binaries of GuitarHub in the [releases](https://github.com/fredimachado/GuitarHub/releases) page as a Zip file, but an installer will be created in the future.
 
 ## How to Run GuitarHub
 
