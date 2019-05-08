@@ -23,6 +23,8 @@ namespace GuitarHub
         private readonly SolidColorBrush PrimaryBackgroundColorBrush;
         private readonly SolidColorBrush NoteNotInScaleBrush = new SolidColorBrush(Color.FromRgb(60, 60, 60));
 
+        private readonly static string StringTag = "FretboardString";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -75,6 +77,8 @@ namespace GuitarHub
             var scale = CreateScaleInstance(selectedNote);
             var frets = 24;
 
+            ShowScaleDegreeCheckboxes(scale);
+
             var tuning = new[] { MusicNotes.E, MusicNotes.B, MusicNotes.G, MusicNotes.D, MusicNotes.A, MusicNotes.E };
             var fretboard = new Fretboard(tuning, frets);
 
@@ -83,9 +87,58 @@ namespace GuitarHub
             ShowFretboard(selectedNote, scale, frets, fretboard);
         }
 
+        private void ShowScaleDegreeCheckboxes(ScaleBase scale)
+        {
+            ScaleDegreeSelector.Children.Clear();
+
+            foreach (var item in scale.ChromaticNotes)
+            {
+                var checkBox = new CheckBox
+                {
+                    Content = item.Interval.IntervalQuality,
+                    Height = 32,
+                    IsChecked = item.IsPresent,
+                    Margin = new Thickness(5, 20, 5, 0)
+                };
+
+                checkBox.Checked += CheckBox_Checked;
+                checkBox.Unchecked += CheckBox_Checked;
+
+                ScaleDegreeSelector.Children.Add(checkBox);
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            var checkBox = e.Source as CheckBox;
+            var isChecked = checkBox.IsChecked ?? false;
+
+            var stringStackPanels = Fretboard.Children
+                                             .OfType<StackPanel>()
+                                             .Where(x => x.Tag?.ToString() == StringTag)
+                                             .ToArray();
+
+            foreach (var stringStackPanel in stringStackPanels)
+            {
+                var noteButtons = stringStackPanel.Children
+                                                  .OfType<Button>()
+                                                  .ToArray();
+
+                foreach (var button in noteButtons)
+                {
+                    var note = button.Content as ScaleNote;
+                    var isSelectedInterval = (IntervalQuality)checkBox.Content == note.Interval.IntervalQuality;
+
+                    if (isSelectedInterval)
+                    {
+                        button.Opacity = isChecked ? note.IsPresent ? 1 : 0.7 : 0;
+                    }
+                }
+            }
+        }
+
         private void ShowFretboard(Note rootNote, ScaleBase scale, int frets, Fretboard fretboard)
         {
-            var style = FindResource("MaterialDesignFloatingActionMiniButton") as Style;
             var margin = new Thickness(10, 5, 10, 5);
 
             Fretboard.Children.Clear();
@@ -97,18 +150,19 @@ namespace GuitarHub
             {
                 var stringStackPanel = new StackPanel
                 {
-                    Orientation = Orientation.Horizontal
+                    Orientation = Orientation.Horizontal,
+                    Tag = StringTag
                 };
 
                 var openNote = fretNote[0];
 
-                AddNote(openNote, scale, style, margin, stringStackPanel);
+                AddNote(openNote, scale, margin, stringStackPanel);
 
                 for (int i = 1; i < fretNote.Length; i++)
                 {
                     var note = fretNote[i];
 
-                    AddNote(note, scale, style, margin, stringStackPanel);
+                    AddNote(note, scale, margin, stringStackPanel);
                 }
 
                 Fretboard.Children.Add(stringStackPanel);
@@ -145,13 +199,14 @@ namespace GuitarHub
             Fretboard.Children.Add(fretMarks);
         }
 
-        private void AddNote(Note note, ScaleBase scale, Style style, Thickness margin, StackPanel stringStackPanel)
+        private void AddNote(ScaleNote scaleNote, ScaleBase scale, Thickness margin, StackPanel stringStackPanel)
         {
             var noteButton = new Button
             {
-                Style = style,
+                Style = NoteButtonStyle,
                 Margin = margin,
-                Content = note
+                Content = scaleNote,
+                ToolTip = scaleNote.Description
             };
 
             noteButton.Background = Brushes.DimGray;
@@ -159,10 +214,8 @@ namespace GuitarHub
 
             if (!scale.Notes.Any(x => x.Note == scaleNote.Note))
             {
-                noteButton.ToolTip = noteButton.Content;
-                noteButton.Background = Brushes.Transparent;
-                noteButton.BorderBrush = Brushes.Transparent;
-                noteButton.Foreground = Brushes.Transparent;
+                noteButton.Background = NoteNotInScaleBrush;
+                noteButton.Opacity = 0;
             }
 
             if (scaleNote.Note == selectedNote)
