@@ -7,7 +7,7 @@ Your Guitar Scales App
 [![Release](https://img.shields.io/github/release/fredimachado/GuitarHub.svg?label=Release&maxAge=60)](https://github.com/fredimachado/GuitarHub/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/fredimachado/GuitarHub/latest/total.svg?label=Downloads&maxAge=60)](https://github.com/fredimachado/GuitarHub/releases/latest)
 
-![Screenshot](https://raw.githubusercontent.com/fredimachado/GuitarHub/master/assets/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/fredimachado/GuitarHub/master/assets/screenshot.gif)
 
 ## How to Install
 
