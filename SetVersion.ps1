@@ -1,4 +1,4 @@
-$version = "1.0.0"
+$version = "1.0.1"
 
 $buildNumber = "${env:BUILD_BUILDNUMBER}"
 if ($buildNumber -eq "") {
