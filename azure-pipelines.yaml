@@ -1,19 +1,33 @@
-name: $(Rev:r)
-
 trigger:
-  tags:
-    include:
-    - v*
   branches:
     include:
-    - '*'
+    - master
+    - release/*
+  paths:
+    exclude:
+    - '**/*.md'
+    - 'GuitarHub.Tests/*'
+
+pr:
+  branches:
+    include:
+    - master
+    - release/*
+  paths:
+    exclude:
+    - '**/*.md'
+    - 'GuitarHub.Tests/*'
+
+variables:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  solution: '**/*.sln'
+  BuildConfiguration: 'Release'
+  BuildPlatform: 'Any CPU'
 
 pool:
   name: Hosted Windows 2019 with VS2019
   demands:
   - msbuild
-  - visualstudio
-  - vstest
 
 steps:
 - task: NuGetToolInstaller@0
@@ -24,24 +38,22 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
-    restoreSolution: '**\*.sln'
+    restoreSolution: '$(solution)'
 
-- powershell: '.\SetVersion.ps1'
-  displayName: 'Set Assembly Version'
+- task: DotNetCoreCLI@2  
+  inputs:
+    command: custom
+    custom: tool
+    arguments: install -g nbgv
+  displayName: Install NBGV tool
+
+- script: nbgv cloud -c
+  displayName: Set Version
 
 - task: VSBuild@1
-  displayName: 'Build solution **\*.sln'
+  displayName: 'Build solution $(solution)'
   inputs:
-    solution: '**\*.sln'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-
-- task: VSTest@2
-  displayName: 'VsTest - testAssemblies'
-  inputs:
-    testAssemblyVer2: |
-     **\$(BuildConfiguration)\*test*.dll
-     !**\obj\**
+    solution: '$(solution)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
@@ -57,39 +69,10 @@ steps:
   inputs:
     rootFolderOrFile: '$(system.defaultworkingdirectory)\GuitarHub\bin\$(BuildConfiguration)'
     includeRootFolder: false
-    archiveFile: '$(Build.ArtifactStagingDirectory)\GuitarHub.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)\GuitarHub-$(Build.BuildNumber).zip'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)'
   condition: succeededOrFailed()
-
-- task: GitHubRelease@0
-  displayName: 'Create GitHub Draft Release'
-  inputs:
-    gitHubConnection: 'GitHub connection 1'
-    repositoryName: $(Build.Repository.Name)
-    assets: '$(Build.ArtifactStagingDirectory)/*'
-    assetUploadMode: 'delete'
-    tagSource: manual
-    tag: 'untagged-$(Build.SourceVersion).$(Build.BuildNumber)'
-    title: '$(Build.BuildId)-$(Build.SourceBranchName)'
-    releaseNotesSource: input
-    releaseNotes: 'Based on commit: $(Build.SourceVersion)'
-    isDraft: true
-    addChangeLog: true
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
-
-- task: GitHubRelease@0
-  displayName: 'Create GitHub Release'
-  inputs:
-    gitHubConnection: 'GitHub connection 1'
-    repositoryName: $(Build.Repository.Name)
-    assets: '$(Build.ArtifactStagingDirectory)/*'
-    assetUploadMode: 'delete'
-    tagSource: manual
-    tag: '$(Build.SourceBranchName)'
-    isDraft: false
-    addChangeLog: true
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
