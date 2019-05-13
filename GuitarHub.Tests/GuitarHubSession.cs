@@ -2,13 +2,14 @@
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Remote;
 using System;
+using System.IO;
 
 namespace GuitarHub.Tests
 {
     public class GuitarHubSession
     {
         protected const string WindowsApplicationDriverUrl = "http://127.0.0.1:4723";
-        private const string GuitarHubAppId = @"C:\code\GuitarHub\GuitarHub\bin\Debug\GuitarHub.exe";
+        private static string GuitarHubAppId = @"..\..\..\GuitarHub\bin\Debug\GuitarHub.exe";
 
         protected static WindowsDriver<WindowsElement> session;
         protected static WindowsElement okButton;
@@ -18,6 +19,13 @@ namespace GuitarHub.Tests
             // Launch a new instance of GuitarHub application
             if (session == null)
             {
+                if (!File.Exists(GuitarHubAppId))
+                {
+                    GuitarHubAppId = Environment.GetEnvironmentVariable("AppFilePath");
+                }
+
+                Assert.IsTrue(File.Exists(GuitarHubAppId), $"File doesn't exist: {GuitarHubAppId}");
+
                 // Create a new session to launch Notepad application
                 DesiredCapabilities appCapabilities = new DesiredCapabilities();
                 appCapabilities.SetCapability("app", GuitarHubAppId);
