@@ -236,15 +236,15 @@ namespace GuitarHub
 
             for (int i = 0; i < fretboard.NumberOfFrets; i++)
             {
-                AddLabel(margin, fretNumbers, i.ToString());
+                AddLabelWithUid(margin, fretNumbers, i.ToString(), "fret");
             }
 
             Fretboard.Children.Add(fretNumbers);
         }
 
-        private void AddLabel(Thickness margin, StackPanel panel, string content, int fontSize = 12)
+        private void AddLabel(Thickness margin, StackPanel panel, string content, int fontSize = 12, string uid = null)
         {
-            var numberLabel = new Label
+            var label = new Label
             {
                 Content = content,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
@@ -253,7 +253,17 @@ namespace GuitarHub
                 FontSize = fontSize
             };
 
-            panel.Children.Add(numberLabel);
+            if (uid != null)
+            {
+                label.Uid = uid;
+            }
+
+            panel.Children.Add(label);
+        }
+
+        private void AddLabelWithUid(Thickness margin, StackPanel panel, string content, string uidPrefix, int fontSize = 12)
+        {
+            AddLabel(margin, panel, content, fontSize, $"{uidPrefix}{content}");
         }
 
         private void ShowStringLinesAndFrets(Fretboard fretboard)
