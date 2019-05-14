@@ -33,8 +33,8 @@ namespace GuitarHub
         {
             InitializeComponent();
 
-            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Title = Title.Replace("{version}", version);
+            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            Title = Title.Replace("{version}", $"{versionInfo.FileMajorPart}.{versionInfo.FileMinorPart}.{versionInfo.FileBuildPart}");
 
             NoteButtonStyle = FindResource("NoteButton") as Style;
             PrimaryBackgroundColorBrush = FindResource("PrimaryBackgroundColorBrush") as SolidColorBrush;
