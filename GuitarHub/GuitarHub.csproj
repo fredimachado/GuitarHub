@@ -121,7 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Music.Core">
-      <Version>1.0.3</Version>
+      <Version>1.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
