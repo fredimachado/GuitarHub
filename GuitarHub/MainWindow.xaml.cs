@@ -77,7 +77,7 @@ namespace GuitarHub
             var scale = CreateScaleInstance(selectedNote);
             var frets = 24;
 
-            ShowScaleDegreeCheckboxes(scale);
+            BuiltSelectorsPanel(scale);
 
             var tuning = new[] { MusicNotes.E, MusicNotes.B, MusicNotes.G, MusicNotes.D, MusicNotes.A, MusicNotes.E };
             var fretboard = new Fretboard(tuning, frets);
@@ -87,9 +87,40 @@ namespace GuitarHub
             ShowFretboard(selectedNote, scale, frets, fretboard);
         }
 
+        private void BuiltSelectorsPanel(ScaleBase scale)
+        {
+            SelectorsPanel.Children.Clear();
+
+            var showNoteInterval = new CheckBox
+            {
+                Content = "Show Intervals",
+                Height = 32,
+                Margin = new Thickness(5, 20, 5, 0)
+            };
+
+            showNoteInterval.Checked += ShowNoteInterval_Checked;
+            showNoteInterval.Unchecked += ShowNoteInterval_Checked;
+
+            SelectorsPanel.Children.Add(showNoteInterval);
+
+            ShowScaleDegreeCheckboxes(scale);
+        }
+
+        private void ShowNoteInterval_Checked(object sender, RoutedEventArgs e)
+        {
+            var checkBox = e.Source as CheckBox;
+            var isChecked = checkBox.IsChecked ?? false;
+
+            AffectNoteButton(button =>
+            {
+                var note = button.Tag as ScaleNote;
+                button.Content = isChecked ? note.Interval.IntervalQuality.ToString() : note.ToString();
+            });
+        }
+
         private void ShowScaleDegreeCheckboxes(ScaleBase scale)
         {
-            ScaleDegreeSelector.Children.Clear();
+            SelectorsPanel.Children.Add(new Label { Content = "Scale Degrees:", Height = 32, VerticalContentAlignment = VerticalAlignment.Center });
 
             foreach (var item in scale.ChromaticNotes)
             {
@@ -98,13 +129,14 @@ namespace GuitarHub
                     Content = item.Interval.IntervalQuality,
                     Height = 32,
                     IsChecked = item.IsPresent,
-                    Margin = new Thickness(5, 20, 5, 0)
+                    Margin = new Thickness(5, 20, 5, 0),
+                    ToolTip = item.Interval.ToString()
                 };
 
                 checkBox.Checked += CheckBox_Checked;
                 checkBox.Unchecked += CheckBox_Checked;
 
-                ScaleDegreeSelector.Children.Add(checkBox);
+                SelectorsPanel.Children.Add(checkBox);
             }
         }
 
@@ -113,6 +145,20 @@ namespace GuitarHub
             var checkBox = e.Source as CheckBox;
             var isChecked = checkBox.IsChecked ?? false;
 
+            AffectNoteButton(button =>
+            {
+                var note = button.Tag as ScaleNote;
+                var isSelectedInterval = (IntervalQuality)checkBox.Content == note.Interval.IntervalQuality;
+
+                if (isSelectedInterval)
+                {
+                    button.Opacity = isChecked ? note.IsPresent ? 1 : 0.7 : 0;
+                }
+            });
+        }
+
+        private void AffectNoteButton(Action<Button> action)
+        {
             var stringStackPanels = Fretboard.Children
                                              .OfType<StackPanel>()
                                              .Where(x => x.Tag?.ToString() == StringTag)
@@ -126,13 +172,7 @@ namespace GuitarHub
 
                 foreach (var button in noteButtons)
                 {
-                    var note = button.Content as ScaleNote;
-                    var isSelectedInterval = (IntervalQuality)checkBox.Content == note.Interval.IntervalQuality;
-
-                    if (isSelectedInterval)
-                    {
-                        button.Opacity = isChecked ? note.IsPresent ? 1 : 0.7 : 0;
-                    }
+                    action(button);
                 }
             }
         }
@@ -205,7 +245,8 @@ namespace GuitarHub
             {
                 Style = NoteButtonStyle,
                 Margin = margin,
-                Content = scaleNote,
+                Content = scaleNote.ToString(),
+                Tag = scaleNote,
                 ToolTip = scaleNote.Description
             };
 

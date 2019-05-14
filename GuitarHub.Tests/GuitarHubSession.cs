@@ -26,7 +26,7 @@ namespace GuitarHub.Tests
 
                 Assert.IsTrue(File.Exists(GuitarHubAppId), $"File doesn't exist: {GuitarHubAppId}");
 
-                // Create a new session to launch Notepad application
+                // Create a new session to launch GuitarHub application
                 DesiredCapabilities appCapabilities = new DesiredCapabilities();
                 appCapabilities.SetCapability("app", GuitarHubAppId);
                 session = new WindowsDriver<WindowsElement>(new Uri(WindowsApplicationDriverUrl), appCapabilities);

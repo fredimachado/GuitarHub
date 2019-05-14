@@ -23,7 +23,7 @@
             <ComboBox Name="Notes" Margin="10"></ComboBox>
             <ComboBox Name="Scales" Margin="10"></ComboBox>
             <Button Margin="10" Click="Button_Click">OK</Button>
-            <StackPanel Name="ScaleDegreeSelector" Orientation="Horizontal">
+            <StackPanel Name="SelectorsPanel" Orientation="Horizontal">
             </StackPanel>
         </StackPanel>
         <StackPanel Name="Fretboard" Grid.Row="1">
