@@ -63,6 +63,11 @@
       <Version>3.8.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="GuitarHub.Tests.runsettings">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
