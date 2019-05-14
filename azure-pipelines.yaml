@@ -2,13 +2,13 @@ trigger:
   branches:
     include: ['master', 'v*']
   paths:
-    exclude: ['*.md', 'GuitarHub.Tests/*']
+    exclude: ['*.md', 'assets', 'GuitarHub.Tests/*']
 
 pr:
   branches:
     include: ['master', 'v*']
   paths:
-    exclude: ['*.md', 'GuitarHub.Tests/*']
+    exclude: ['*.md', 'assets', 'GuitarHub.Tests/*']
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
