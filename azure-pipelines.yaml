@@ -1,22 +1,14 @@
 trigger:
   branches:
-    include:
-    - master
-    - release/*
+    include: ['master', 'v*']
   paths:
-    exclude:
-    - '**/*.md'
-    - 'GuitarHub.Tests/*'
+    exclude: ['*.md', 'GuitarHub.Tests/*']
 
 pr:
   branches:
-    include:
-    - master
-    - release/*
+    include: ['master', 'v*']
   paths:
-    exclude:
-    - '**/*.md'
-    - 'GuitarHub.Tests/*'
+    exclude: ['*.md', 'GuitarHub.Tests/*']
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
