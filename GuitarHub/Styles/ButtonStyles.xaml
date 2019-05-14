@@ -49,6 +49,7 @@
                                             TextBlock.Foreground="{TemplateBinding Foreground}"
                                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            FlowDirection="LeftToRight"
                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Grid>
                     <ControlTemplate.Triggers>

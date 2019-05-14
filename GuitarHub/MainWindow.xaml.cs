@@ -90,7 +90,12 @@ namespace GuitarHub
 
             ShowFretboard(selectedNote, scale, frets, fretboard);
         }
-        
+
+        private void LeftHanded_Checked(object sender, RoutedEventArgs e)
+        {
+            OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        }
+
         private void FlipNut_Checked(object sender, RoutedEventArgs e)
         {
             OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
@@ -99,7 +104,7 @@ namespace GuitarHub
         private void ShowNoteInterval_Checked(object sender, RoutedEventArgs e)
         {
             var checkBox = e.Source as CheckBox;
-            var isChecked = checkBox.IsChecked ?? false;
+            var isChecked = checkBox.IsChecked.Value;
 
             AffectNoteButton(button =>
             {
@@ -135,7 +140,7 @@ namespace GuitarHub
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             var checkBox = e.Source as CheckBox;
-            var isChecked = checkBox.IsChecked ?? false;
+            var isChecked = checkBox.IsChecked.Value;
 
             AffectNoteButton(button =>
             {
@@ -183,6 +188,7 @@ namespace GuitarHub
                 var stringStackPanel = new StackPanel
                 {
                     Orientation = Orientation.Horizontal,
+                    FlowDirection = LeftHanded.IsChecked.Value ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
                     Tag = StringTag
                 };
 
@@ -208,7 +214,8 @@ namespace GuitarHub
             var margin = new Thickness(10, 5, 10, 5);
             var fretMarks = new StackPanel
             {
-                Orientation = Orientation.Horizontal
+                Orientation = Orientation.Horizontal,
+                FlowDirection = LeftHanded.IsChecked.Value ? FlowDirection.RightToLeft : FlowDirection.LeftToRight
             };
 
             var marks = new[] { 1, 3, 5, 7, 9 };
@@ -264,7 +271,8 @@ namespace GuitarHub
             var margin = new Thickness(10, 5, 10, 5);
             var fretNumbers = new StackPanel
             {
-                Orientation = Orientation.Horizontal
+                Orientation = Orientation.Horizontal,
+                FlowDirection = LeftHanded.IsChecked.Value ? FlowDirection.RightToLeft : FlowDirection.LeftToRight
             };
 
             for (int i = 0; i < fretboard.NumberOfFrets; i++)
@@ -348,11 +356,19 @@ namespace GuitarHub
                 };
 
                 canvas.Children.Add(border);
-
-
             }
 
             Fretboard.Children.Add(canvas);
+
+            if (LeftHanded.IsChecked.Value)
+            {
+                canvas.RenderTransformOrigin = new Point(0.5, 0.5);
+                var transform = new ScaleTransform
+                {
+                    ScaleX = -1
+                };
+                canvas.RenderTransform = transform;
+            }
         }
 
         private ScaleBase CreateScaleInstance(Note rootNote)
