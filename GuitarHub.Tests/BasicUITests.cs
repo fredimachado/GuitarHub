@@ -29,5 +29,20 @@ namespace GuitarHub.Tests
             // 25 because the open string note is considered a fret
             Assert.AreEqual(25, fretNumbers.Count);
         }
+
+        [TestMethod]
+        public void TestShowIntervals()
+        {
+            okButton.Click();
+            Thread.Sleep(200);
+
+            var note = session.FindElementByName("A");
+            var showIntervals = session.FindElementByName("Show Intervals");
+
+            showIntervals.Click();
+            Thread.Sleep(200);
+
+            Assert.AreEqual("P1", note.Text);
+        }
     }
 }
