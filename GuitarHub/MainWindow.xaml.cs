@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -16,6 +17,9 @@ namespace GuitarHub
     public partial class MainWindow : Window
     {
         private readonly string[] availableNotes = new[] { "A", "Ab", "A#", "B", "Bb", "C", "C#", "D", "Db", "D#", "E", "Eb", "F", "F#", "G", "Gb", "G#" };
+
+        private readonly static Note[] standardTuning = new[] { MusicNotes.E, MusicNotes.B, MusicNotes.G, MusicNotes.D, MusicNotes.A, MusicNotes.E };
+        private readonly static Note[] standardTuningFlip = standardTuning.Reverse().ToArray();
 
         private Note selectedNote;
 
@@ -77,33 +81,19 @@ namespace GuitarHub
             var scale = CreateScaleInstance(selectedNote);
             var frets = 24;
 
-            BuiltSelectorsPanel(scale);
+            ShowScaleDegreeCheckboxes(scale);
 
-            var tuning = new[] { MusicNotes.E, MusicNotes.B, MusicNotes.G, MusicNotes.D, MusicNotes.A, MusicNotes.E };
+            var tuning = FlipNut.IsChecked.Value ? standardTuningFlip : standardTuning;
             var fretboard = new Fretboard(tuning, frets);
 
             fretboard.SetScale(scale);
 
             ShowFretboard(selectedNote, scale, frets, fretboard);
         }
-
-        private void BuiltSelectorsPanel(ScaleBase scale)
+        
+        private void FlipNut_Checked(object sender, RoutedEventArgs e)
         {
-            SelectorsPanel.Children.Clear();
-
-            var showNoteInterval = new CheckBox
-            {
-                Content = "Show Intervals",
-                Height = 32,
-                Margin = new Thickness(5, 20, 5, 0)
-            };
-
-            showNoteInterval.Checked += ShowNoteInterval_Checked;
-            showNoteInterval.Unchecked += ShowNoteInterval_Checked;
-
-            SelectorsPanel.Children.Add(showNoteInterval);
-
-            ShowScaleDegreeCheckboxes(scale);
+            OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void ShowNoteInterval_Checked(object sender, RoutedEventArgs e)
@@ -120,7 +110,9 @@ namespace GuitarHub
 
         private void ShowScaleDegreeCheckboxes(ScaleBase scale)
         {
-            SelectorsPanel.Children.Add(new Label { Content = "Scale Degrees:", Height = 32, VerticalContentAlignment = VerticalAlignment.Center });
+            DegreeSelector.Children.Clear();
+
+            DegreeSelector.Children.Add(new Label { Content = "Scale Degrees:", Height = 32, VerticalContentAlignment = VerticalAlignment.Center });
 
             foreach (var item in scale.ChromaticNotes)
             {
@@ -136,7 +128,7 @@ namespace GuitarHub
                 checkBox.Checked += CheckBox_Checked;
                 checkBox.Unchecked += CheckBox_Checked;
 
-                SelectorsPanel.Children.Add(checkBox);
+                DegreeSelector.Children.Add(checkBox);
             }
         }
 

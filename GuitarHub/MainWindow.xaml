@@ -22,8 +22,12 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <ComboBox Name="Notes" Margin="10"></ComboBox>
             <ComboBox Name="Scales" Margin="10"></ComboBox>
-            <Button Margin="10" Click="Button_Click">OK</Button>
+            <Button Margin="10" Click="Button_Click" Name="OkButton">OK</Button>
             <StackPanel Name="SelectorsPanel" Orientation="Horizontal">
+                <CheckBox Name="ShowIntervals" Margin="10" VerticalContentAlignment="Center" Checked="ShowNoteInterval_Checked" Unchecked="ShowNoteInterval_Checked">Show Intervals</CheckBox>
+                <CheckBox Name="FlipNut" Margin="10" VerticalContentAlignment="Center" Checked="FlipNut_Checked" Unchecked="FlipNut_Checked">Flip Nut</CheckBox>
+                <StackPanel Name="DegreeSelector" Orientation="Horizontal">
+                </StackPanel>
             </StackPanel>
         </StackPanel>
         <StackPanel Name="Fretboard" Grid.Row="1">
