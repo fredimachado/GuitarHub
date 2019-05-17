@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+   <metadata>
+    <id>guitarhub</id>
+    <!-- Version is set during the 'Create Chocolatey Package' task in CI build -->
+    <version>1.0.0</version>
+    <title>GuitarHub</title>
+    <authors>Fredi Machado</authors>
+    <projectUrl>https://github.com/fredimachado/GuitarHub</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/fredimachado/GuitarHub/master/LICENSE</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/fredimachado/GuitarHub/master/assets/guitarhub.png</iconUrl>
+    <docsUrl>https://github.com/fredimachado/GuitarHub</docsUrl>
+    <bugTrackerUrl>https://github.com/fredimachado/GuitarHub/issues</bugTrackerUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description><![CDATA[
+Guitar Hub is an open-source guitar scale application for PCs that run Windows.
+
+## Features
+
+- Guitar fretboard
+- Scales in various keys
+- Change mode
+- Toggle note name or interval name
+- Flip neck
+- Left-handed fretboard
+- Toggle intervals
+
+![Screenshot](https://raw.githubusercontent.com/fredimachado/GuitarHub/master/assets/screenshot.gif)
+]]></description>
+    <summary>
+    Guitar Hub is an open-source guitar application app for PCs that run Windows.
+    </summary>
+    <tags>guitarhub guitar music scales fretboard windows</tags>
+    <packageSourceUrl>https://github.com/fredimachado/GuitarHub</packageSourceUrl>
+    <owners>Fredi Machado</owners>
+    <releaseNotes>https://github.com/fredimachado/GuitarHub/releases</releaseNotes>
+    <dependencies>
+      <dependency id="dotnet4.6" version="4.6.00081.20150925" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
