@@ -35,9 +35,6 @@ Guitar Hub is an open-source guitar scale application for PCs that run Windows.
     <packageSourceUrl>https://github.com/fredimachado/GuitarHub</packageSourceUrl>
     <owners>Fredi Machado</owners>
     <releaseNotes>https://github.com/fredimachado/GuitarHub/releases</releaseNotes>
-    <dependencies>
-      <dependency id="dotnet4.6" version="4.6.00081.20150925" />
-    </dependencies>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
