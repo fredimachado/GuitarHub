@@ -57,7 +57,7 @@ steps:
     includeRootFolder: false
     archiveFile: '$(Build.ArtifactStagingDirectory)\GuitarHub-$(Build.BuildNumber).zip'
 
-- script: choco pack --version=$(Build.BuildNumber) --out=$(Build.ArtifactStagingDirectory)
+- script: choco pack --version=$(Build.BuildNumber) --out=$(Build.ArtifactStagingDirectory) .\chocolatey\guitarhub.nuspec
   displayName: Create Chocolatey Package
 
 - task: PublishBuildArtifacts@1
