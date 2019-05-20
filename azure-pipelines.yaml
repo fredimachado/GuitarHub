@@ -2,7 +2,7 @@ trigger:
   branches:
     include: ['master', 'v*']
   paths:
-    exclude: ['azure-pipelines.yaml', '*.md', 'LICENSE', 'assets', 'chocolatey', 'GuitarHub.Tests/*']
+    exclude: ['azure-pipelines.yaml', 'README.md', 'LICENSE', 'assets', 'chocolatey', 'GuitarHub.Tests/*']
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
