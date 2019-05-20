@@ -6,6 +6,7 @@ Your Guitar Scales App
 [![UI Tests](https://img.shields.io/azure-devops/build/FrediMachado/GuitarHub/11.svg?label=UI%20tests)](https://dev.azure.com/FrediMachado/GuitarHub/_build/?definitionId=11)
 [![License](https://img.shields.io/github/license/fredimachado/GuitarHub.svg)](https://github.com/fredimachado/GuitarHub/blob/master/LICENSE)
 ![Windows Platform](https://img.shields.io/badge/platform-windows-blue.svg)
+[![Chocolatey](https://img.shields.io/chocolatey/v/guitarhub.svg)](https://chocolatey.org/packages/guitarhub)
 [![Release](https://img.shields.io/github/release/fredimachado/GuitarHub.svg?label=Release&maxAge=60)](https://github.com/fredimachado/GuitarHub/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/fredimachado/GuitarHub/latest/total.svg?label=Downloads&maxAge=60)](https://github.com/fredimachado/GuitarHub/releases/latest)
 
