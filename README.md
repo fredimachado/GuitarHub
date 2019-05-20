@@ -17,7 +17,7 @@ If you have [Chocolatey](https://chocolatey.org/packages/guitarhub), you can ins
 
     choco install guitarhub
 
-After it's install, run it:
+After it's installed, run it:
 
     guitarhub
 
