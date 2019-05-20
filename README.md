@@ -13,15 +13,19 @@ Your Guitar Scales App
 
 ## How to Install
 
-If you have [Chocolatey](https://chocolatey.org/packages/guitarhub), you can install GuitarHub by running:
+If you have [Chocolatey](https://chocolatey.org/packages/guitarhub), you can install GuitarHub by opening powershell and running:
 
     choco install guitarhub
+
+After it's install, run it:
+
+    guitarhub
 
 ## If you don't have Chocolatey installed
 
 At the moment you can only find compiled binaries of GuitarHub in the [releases](https://github.com/fredimachado/GuitarHub/releases) page as a Zip file, but an installer will be created in the future.
 
-## How to Run GuitarHub
+## Download Zip, extract and run
 
 - Download GuitarHub.zip from the [latest release](https://github.com/fredimachado/GuitarHub/releases/latest) assets.
 - Extract all files in GuitarHub.zip to a folder
