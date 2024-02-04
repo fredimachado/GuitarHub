@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpft="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:local="clr-namespace:GuitarHub"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource PrimaryForegroundColorBrush}"
@@ -12,28 +13,45 @@
         TextOptions.TextRenderingMode="Auto"
         Foreground="{DynamicResource PrimaryForegroundColorBrush}"
         Background="{DynamicResource WindowBackground}"
-        Title="Guitar Hub v{version} by Fredi Machado" Height="515" MinHeight="515" MaxHeight="515" Width="1515" MinWidth="1515" MaxWidth="1515">
+        Title="Guitar Hub v{version} by Fredi Machado" Height="555" MinHeight="555" MaxHeight="555" Width="1540" MinWidth="1540" MaxWidth="1540">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="52"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="52" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <ComboBox Name="Notes" Margin="10"></ComboBox>
             <ComboBox Name="Scales" Margin="10"></ComboBox>
             <Button Margin="10" Click="Button_Click" Name="OkButton">OK</Button>
             <StackPanel Name="SelectorsPanel" Orientation="Horizontal">
-                <CheckBox Name="ShowIntervals" Margin="10" VerticalContentAlignment="Center" Checked="ShowNoteInterval_Checked" Unchecked="ShowNoteInterval_Checked">Show Intervals</CheckBox>
-                <CheckBox Name="LeftHanded" Margin="10" VerticalContentAlignment="Center" Checked="LeftHanded_Checked" Unchecked="LeftHanded_Checked">Left Handed</CheckBox>
-                <CheckBox Name="FlipNut" Margin="10" VerticalContentAlignment="Center" Checked="FlipNut_Checked" Unchecked="FlipNut_Checked">Flip Nut</CheckBox>
+                <CheckBox Name="ShowIntervals" Margin="8" VerticalContentAlignment="Center" Checked="ShowNoteInterval_Checked" Unchecked="ShowNoteInterval_Checked">Show Intervals</CheckBox>
+                <CheckBox Name="LeftHanded" Margin="8" VerticalContentAlignment="Center" Checked="LeftHanded_Checked" Unchecked="LeftHanded_Checked">Left Handed</CheckBox>
+                <CheckBox Name="FlipNut" Margin="8" VerticalContentAlignment="Center" Checked="FlipNut_Checked" Unchecked="FlipNut_Checked">Flip Nut</CheckBox>
+                <CheckBox Name="String1" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">1st</CheckBox>
+                <CheckBox Name="String2" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">2nd</CheckBox>
+                <CheckBox Name="String3" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">3rd</CheckBox>
+                <CheckBox Name="String4" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">4th</CheckBox>
+                <CheckBox Name="String5" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">5th</CheckBox>
+                <CheckBox Name="String6" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">6th</CheckBox>
                 <StackPanel Name="DegreeSelector" Orientation="Horizontal">
                 </StackPanel>
             </StackPanel>
         </StackPanel>
-        <StackPanel Name="Fretboard" Grid.Row="1">
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="2">
+        <wpft:RangeSlider
+            Name="FretRange"
+            Grid.Row="1"
+            Margin="10"
+            Minimum="0"
+            Maximum="24"
+            LowerValue="0"
+            HigherValue="24"
+            Step="1"
+            LowerValueChanged="RefreshFretNotes"
+            HigherValueChanged="RefreshFretNotes" />
+        <StackPanel Name="Fretboard" Grid.Row="2"></StackPanel>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="3">
             <TextBlock Margin="10 0 0 0">
                 <Hyperlink NavigateUri="https://github.com/fredimachado/GuitarHub" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/fredimachado/GuitarHub</Hyperlink>
             </TextBlock>

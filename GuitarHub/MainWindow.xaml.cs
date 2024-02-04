@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
 
 namespace GuitarHub
 {
@@ -28,6 +29,9 @@ namespace GuitarHub
         private readonly SolidColorBrush NoteNotInScaleBrush = new SolidColorBrush(Color.FromRgb(60, 60, 60));
 
         private readonly static string StringTag = "FretboardString";
+
+        private int currentFretLowValue = 0;
+        private int currentFretHighValue = 24;
 
         public MainWindow()
         {
@@ -60,7 +64,7 @@ namespace GuitarHub
 
         private void FillScales()
         {
-            var scaleDefinitions = ScaleEnumerator.ScaleTypes.Select(x => x.Name.Replace("Scale", "")).ToArray();
+            var scaleDefinitions = ScaleEnumerator.ScaleTypes.Select(x => x.Name.Replace("Scale", ""));
 
             foreach (var scale in scaleDefinitions)
             {
@@ -101,6 +105,11 @@ namespace GuitarHub
             OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
+        private void ShowString(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         private void ShowNoteInterval_Checked(object sender, RoutedEventArgs e)
         {
             var checkBox = e.Source as CheckBox;
@@ -108,8 +117,8 @@ namespace GuitarHub
 
             AffectNoteButton(button =>
             {
-                var note = button.Tag as ScaleNote;
-                button.Content = isChecked ? note.Interval.IntervalQuality.ToString() : note.ToString();
+                var fretNote = button.Tag as FretNote;
+                button.Content = isChecked ? fretNote.Note.Interval.IntervalQuality.ToString() : fretNote.Note.ToString();
             });
         }
 
@@ -130,26 +139,26 @@ namespace GuitarHub
                     ToolTip = item.Interval.ToString()
                 };
 
-                checkBox.Checked += CheckBox_Checked;
-                checkBox.Unchecked += CheckBox_Checked;
+                checkBox.Checked += ScaleDegree_Checked;
+                checkBox.Unchecked += ScaleDegree_Checked;
 
                 DegreeSelector.Children.Add(checkBox);
             }
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        private void ScaleDegree_Checked(object sender, RoutedEventArgs e)
         {
             var checkBox = e.Source as CheckBox;
             var isChecked = checkBox.IsChecked.Value;
 
             AffectNoteButton(button =>
             {
-                var note = button.Tag as ScaleNote;
-                var isSelectedInterval = (IntervalQuality)checkBox.Content == note.Interval.IntervalQuality;
+                var fretNote = button.Tag as FretNote;
+                var isSelectedInterval = (IntervalQuality)checkBox.Content == fretNote.Note.Interval.IntervalQuality;
 
-                if (isSelectedInterval)
+                if (isSelectedInterval && IsFretNoteVisible(fretNote))
                 {
-                    button.Opacity = isChecked ? note.IsPresent ? 1 : 0.7 : 0;
+                    button.Opacity = isChecked ? fretNote.Note.IsPresent ? 1 : 0.7 : 0;
                 }
             });
         }
@@ -158,14 +167,12 @@ namespace GuitarHub
         {
             var stringStackPanels = Fretboard.Children
                                              .OfType<StackPanel>()
-                                             .Where(x => x.Tag?.ToString() == StringTag)
-                                             .ToArray();
+                                             .Where(x => ReferenceEquals(x.Tag, StringTag));
 
             foreach (var stringStackPanel in stringStackPanels)
             {
                 var noteButtons = stringStackPanel.Children
-                                                  .OfType<Button>()
-                                                  .ToArray();
+                                                  .OfType<Button>();
 
                 foreach (var button in noteButtons)
                 {
@@ -180,11 +187,11 @@ namespace GuitarHub
 
             Fretboard.Children.Clear();
 
-            ShowFretNumbers(fretboard);
             ShowStringLinesAndFrets(fretboard);
 
-            foreach (var fretNote in fretboard.StringNotes)
+            for (int i = 0; i < fretboard.StringNotes.Count; i++)
             {
+                var stringNotes = fretboard.StringNotes[i];
                 var stringStackPanel = new StackPanel
                 {
                     Orientation = Orientation.Horizontal,
@@ -192,18 +199,24 @@ namespace GuitarHub
                     Tag = StringTag
                 };
 
-                var openNote = fretNote[0];
-
-                AddNote(openNote, scale, margin, stringStackPanel);
-
-                for (int i = 1; i < fretNote.Length; i++)
+                for (int j = 0; j < stringNotes.Length; j++)
                 {
-                    var note = fretNote[i];
+                    var note = stringNotes[j];
 
-                    AddNote(note, scale, margin, stringStackPanel);
+                    AddNote(note, scale, margin, stringNumber: i, fretNumber: j, stringStackPanel);
                 }
 
                 Fretboard.Children.Add(stringStackPanel);
+
+                if ((!(String1.IsChecked ?? false) && i == 0)
+                    || (!(String2.IsChecked ?? false) && i == 1)
+                    || (!(String3.IsChecked ?? false) && i == 2)
+                    || (!(String4.IsChecked ?? false) && i == 3)
+                    || (!(String5.IsChecked ?? false) && i == 4)
+                    || (!(String6.IsChecked ?? false) && i == 5))
+                {
+                    stringStackPanel.Visibility = Visibility.Hidden;
+                }
             }
 
             ShowFretMarks(fretboard);
@@ -238,21 +251,22 @@ namespace GuitarHub
             Fretboard.Children.Add(fretMarks);
         }
 
-        private void AddNote(ScaleNote scaleNote, ScaleBase scale, Thickness margin, StackPanel stringStackPanel)
+        private void AddNote(ScaleNote scaleNote, ScaleBase scale, Thickness margin, int stringNumber, int fretNumber, StackPanel stringStackPanel)
         {
+            var fretNote = new FretNote(scaleNote, stringNumber, fretNumber);
             var noteButton = new Button
             {
                 Style = NoteButtonStyle,
                 Margin = margin,
                 Content = scaleNote.ToString(),
-                Tag = scaleNote,
+                Tag = fretNote,
                 ToolTip = scaleNote.Description
             };
 
             noteButton.Background = Brushes.DimGray;
             noteButton.BorderBrush = Brushes.Transparent;
 
-            if (!scale.Notes.Any(x => x.Note == scaleNote.Note))
+            if (!scale.Notes.Any(x => x.Note == scaleNote.Note) || !IsFretNoteVisible(fretNote))
             {
                 noteButton.Background = NoteNotInScaleBrush;
                 noteButton.Opacity = 0;
@@ -266,21 +280,31 @@ namespace GuitarHub
             stringStackPanel.Children.Add(noteButton);
         }
 
-        private void ShowFretNumbers(Fretboard fretboard)
+        private void RefreshFretNotes(object sender, RoutedEventArgs e)
         {
-            var margin = new Thickness(10, 5, 10, 5);
-            var fretNumbers = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                FlowDirection = LeftHanded.IsChecked.Value ? FlowDirection.RightToLeft : FlowDirection.LeftToRight
-            };
+            var rangeSlider = e.Source as RangeSlider;
 
-            for (int i = 0; i < fretboard.NumberOfFrets; i++)
+            var lowerValue = (int)(rangeSlider.LowerValue+0.5);
+            var higherValue = (int)(rangeSlider.HigherValue+0.5);
+
+            if (lowerValue == currentFretLowValue && higherValue == currentFretHighValue)
             {
-                AddLabelWithUid(margin, fretNumbers, i.ToString(), "fret");
+                return;
             }
 
-            Fretboard.Children.Add(fretNumbers);
+            currentFretLowValue = lowerValue;
+            currentFretHighValue = higherValue;
+
+            AffectNoteButton(button =>
+            {
+                var fretNote = button.Tag as FretNote;
+                button.Opacity = IsFretNoteVisible(fretNote) ? fretNote.Note.IsPresent ? 1 : 0 : 0;
+            });
+        }
+
+        private bool IsFretNoteVisible(FretNote fretNote)
+        {
+            return fretNote.FretNumber >= currentFretLowValue && fretNote.FretNumber <= currentFretHighValue;
         }
 
         private void AddLabel(Thickness margin, StackPanel panel, string content, int fontSize = 12, string uid = null)
@@ -300,11 +324,6 @@ namespace GuitarHub
             }
 
             panel.Children.Add(label);
-        }
-
-        private void AddLabelWithUid(Thickness margin, StackPanel panel, string content, string uidPrefix, int fontSize = 12)
-        {
-            AddLabel(margin, panel, content, fontSize, $"{uidPrefix}{content}");
         }
 
         private void ShowStringLinesAndFrets(Fretboard fretboard)
@@ -384,5 +403,18 @@ namespace GuitarHub
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
+
+    public class FretNote
+    {
+        public FretNote(ScaleNote note, int stringNumber, int fretNumber)
+        {
+            Note = note;
+            StringNumber = stringNumber;
+            FretNumber = fretNumber;
+        }
+
+        public ScaleNote Note { get; }
+        public int StringNumber { get; }
+        public int FretNumber { get; }
     }
 }
