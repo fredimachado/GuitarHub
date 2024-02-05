@@ -1,5 +1,6 @@
 ﻿using Music.Core;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -23,6 +24,7 @@ namespace GuitarHub
         private readonly static Note[] standardTuningFlip = standardTuning.Reverse().ToArray();
 
         private Note selectedNote;
+        private ScaleBase currentScale;
 
         private readonly Style NoteButtonStyle;
         private readonly SolidColorBrush PrimaryBackgroundColorBrush;
@@ -32,6 +34,11 @@ namespace GuitarHub
 
         private int currentFretLowValue = 0;
         private int currentFretHighValue = 24;
+
+        private readonly static Transform invertedTransform = new ScaleTransform
+        {
+            ScaleX = -1
+        };
 
         public MainWindow()
         {
@@ -82,17 +89,30 @@ namespace GuitarHub
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             selectedNote = MusicNotes.FromString(Notes.SelectionBoxItem as string);
-            var scale = CreateScaleInstance(selectedNote);
+            currentScale = CreateScaleInstance(selectedNote);
             var frets = 24;
 
-            ShowScaleDegreeCheckboxes(scale);
+            ShowScaleDegreeCheckboxes(currentScale);
 
             var tuning = FlipNut.IsChecked.Value ? standardTuningFlip : standardTuning;
             var fretboard = new Fretboard(tuning, frets);
 
-            fretboard.SetScale(scale);
+            fretboard.SetScale(currentScale);
 
-            ShowFretboard(selectedNote, scale, frets, fretboard);
+            ShowFretboard(selectedNote, currentScale, frets, fretboard);
+
+            FretRange.RenderTransformOrigin = new Point(0.5, 0.5);
+            FretRange.RenderTransform = LeftHanded.IsChecked.Value ? invertedTransform : Transform.Identity;
+
+            (IntervalFilter.Items[1] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
+            (IntervalFilter.Items[2] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
+            (IntervalFilter.Items[6] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
+            (IntervalFilter.Items[7] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
+
+            (IntervalFrom.Items[5] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
+            (IntervalFrom.Items[6] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
+
+            FilterButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void LeftHanded_Checked(object sender, RoutedEventArgs e)
@@ -115,11 +135,7 @@ namespace GuitarHub
             var checkBox = e.Source as CheckBox;
             var isChecked = checkBox.IsChecked.Value;
 
-            AffectNoteButton(button =>
-            {
-                var fretNote = button.Tag as FretNote;
-                button.Content = isChecked ? fretNote.Note.Interval.IntervalQuality.ToString() : fretNote.Note.ToString();
-            });
+            AffectNoteButton(ShowNoteInterval(isChecked));
         }
 
         private void ShowScaleDegreeCheckboxes(ScaleBase scale)
@@ -135,8 +151,9 @@ namespace GuitarHub
                     Content = item.Interval.IntervalQuality,
                     Height = 32,
                     IsChecked = item.IsPresent,
-                    Margin = new Thickness(5, 20, 5, 0),
-                    ToolTip = item.Interval.ToString()
+                    Margin = new Thickness(5, 0, 5, 0),
+                    ToolTip = item.Interval.ToString(),
+                    VerticalContentAlignment = VerticalAlignment.Center
                 };
 
                 checkBox.Checked += ScaleDegree_Checked;
@@ -151,16 +168,7 @@ namespace GuitarHub
             var checkBox = e.Source as CheckBox;
             var isChecked = checkBox.IsChecked.Value;
 
-            AffectNoteButton(button =>
-            {
-                var fretNote = button.Tag as FretNote;
-                var isSelectedInterval = (IntervalQuality)checkBox.Content == fretNote.Note.Interval.IntervalQuality;
-
-                if (isSelectedInterval && IsFretNoteVisible(fretNote))
-                {
-                    button.Opacity = isChecked ? fretNote.Note.IsPresent ? 1 : 0.7 : 0;
-                }
-            });
+            AffectNoteButton(ShowHideScaleDegrees(checkBox, isChecked));
         }
 
         private void AffectNoteButton(Action<Button> action)
@@ -266,9 +274,14 @@ namespace GuitarHub
             noteButton.Background = Brushes.DimGray;
             noteButton.BorderBrush = Brushes.Transparent;
 
-            if (!scale.Notes.Any(x => x.Note == scaleNote.Note) || !IsFretNoteVisible(fretNote))
+            if (!scale.Notes.Any(x => x.Note == scaleNote.Note))
             {
                 noteButton.Background = NoteNotInScaleBrush;
+                noteButton.Opacity = 0;
+            }
+
+            if (!IsFretNoteVisible(fretNote))
+            {
                 noteButton.Opacity = 0;
             }
 
@@ -284,8 +297,8 @@ namespace GuitarHub
         {
             var rangeSlider = e.Source as RangeSlider;
 
-            var lowerValue = (int)(rangeSlider.LowerValue+0.5);
-            var higherValue = (int)(rangeSlider.HigherValue+0.5);
+            var lowerValue = (int)(rangeSlider.LowerValue + 0.5);
+            var higherValue = (int)(rangeSlider.HigherValue + 0.5);
 
             if (lowerValue == currentFretLowValue && higherValue == currentFretHighValue)
             {
@@ -295,11 +308,9 @@ namespace GuitarHub
             currentFretLowValue = lowerValue;
             currentFretHighValue = higherValue;
 
-            AffectNoteButton(button =>
-            {
-                var fretNote = button.Tag as FretNote;
-                button.Opacity = IsFretNoteVisible(fretNote) ? fretNote.Note.IsPresent ? 1 : 0 : 0;
-            });
+            AffectNoteButton(RefreshFretNotes());
+
+            FilterButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private bool IsFretNoteVisible(FretNote fretNote)
@@ -382,11 +393,7 @@ namespace GuitarHub
             if (LeftHanded.IsChecked.Value)
             {
                 canvas.RenderTransformOrigin = new Point(0.5, 0.5);
-                var transform = new ScaleTransform
-                {
-                    ScaleX = -1
-                };
-                canvas.RenderTransform = transform;
+                canvas.RenderTransform = invertedTransform;
             }
         }
 
@@ -403,6 +410,126 @@ namespace GuitarHub
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentScale == null ||
+                !((IntervalFilter.SelectedItem as ComboBoxItem)?.Content is string intervalFilter) ||
+                intervalFilter == string.Empty ||
+                IntervalFrom.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            var scaleNotes = Rotate(currentScale.Notes, IntervalFrom.SelectedIndex);
+
+            var intervalNotes = new List<ScaleNote>
+            {
+                scaleNotes.First()
+            };
+
+            if (intervalFilter == "Triad")
+            {
+                intervalNotes.Add(scaleNotes.Skip(2).First());
+                intervalNotes.Add(scaleNotes.Skip(4).First());
+            }
+            else if (intervalFilter == "Tetrad (7th)")
+            {
+                intervalNotes.Add(scaleNotes.Skip(2).First());
+                intervalNotes.Add(scaleNotes.Skip(4).First());
+                intervalNotes.Add(scaleNotes.Skip(6).First());
+            }
+            else if (intervalFilter == "Third")
+            {
+                intervalNotes.Add(scaleNotes.Skip(2).First());
+            }
+            else if (intervalFilter == "Forth")
+            {
+                intervalNotes.Add(scaleNotes.Skip(3).First());
+            }
+            else if (intervalFilter == "Fifth")
+            {
+                intervalNotes.Add(scaleNotes.Skip(4).First());
+            }
+            else if (intervalFilter == "Sixth")
+            {
+                intervalNotes.Add(scaleNotes.Skip(5).First());
+            }
+            else if (intervalFilter == "Seventh")
+            {
+                intervalNotes.Add(scaleNotes.Skip(6).First());
+            }
+
+            AffectNoteButton(FilterIntervals(intervalNotes));
+        }
+
+        private static IEnumerable<ScaleNote> Rotate(IEnumerable<ScaleNote> notes, int fromIndex)
+        {
+            if (fromIndex == 0)
+            {
+                return notes;
+            }
+
+            var newEnd = notes.Take(fromIndex);
+            var newStart = notes.Skip(fromIndex);
+
+            return newStart.Concat(newEnd);
+        }
+
+        private static Action<Button> ShowNoteInterval(bool isChecked)
+        {
+            return button =>
+            {
+                var fretNote = button.Tag as FretNote;
+                button.Content = isChecked ? fretNote.Note.Interval.IntervalQuality.ToString() : fretNote.Note.ToString();
+            };
+        }
+
+        private Action<Button> ShowHideScaleDegrees(CheckBox checkBox, bool isChecked)
+        {
+            return button =>
+            {
+                var fretNote = button.Tag as FretNote;
+                var isSelectedInterval = (IntervalQuality)checkBox.Content == fretNote.Note.Interval.IntervalQuality;
+
+                if (isSelectedInterval && IsFretNoteVisible(fretNote))
+                {
+                    button.Opacity = isChecked && IsFretNoteVisible(fretNote) ? fretNote.Note.IsPresent ? 1 : 0.5 : 0;
+                }
+            };
+        }
+
+        private Action<Button> RefreshFretNotes()
+        {
+            return button =>
+            {
+                var fretNote = button.Tag as FretNote;
+                button.Opacity = IsFretNoteVisible(fretNote) && fretNote.Note.IsPresent ? 1 : 0;
+            };
+        }
+
+        private Action<Button> FilterIntervals(List<ScaleNote> intervalNotes)
+        {
+            return button =>
+            {
+                var fretNote = button.Tag as FretNote;
+
+                if (intervalNotes.Any(x => x.ScaleDegree == fretNote.Note.ScaleDegree))
+                {
+                    button.Opacity = 1;
+                }
+                else
+                {
+                    button.Opacity = !HideScale.IsChecked.Value && fretNote.Note.IsPresent ? 0.3 : 0;
+                }
+
+                if (!IsFretNoteVisible(fretNote))
+                {
+                    button.Opacity = 0;
+                }
+            };
+        }
+    }
 
     public class FretNote
     {

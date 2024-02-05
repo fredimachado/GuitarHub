@@ -13,35 +13,63 @@
         TextOptions.TextRenderingMode="Auto"
         Foreground="{DynamicResource PrimaryForegroundColorBrush}"
         Background="{DynamicResource WindowBackground}"
-        Title="Guitar Hub v{version} by Fredi Machado" Height="555" MinHeight="555" MaxHeight="555" Width="1540" MinWidth="1540" MaxWidth="1540">
+        Title="Guitar Hub v{version} by Fredi Machado" Height="560" MinHeight="560" MaxHeight="560" Width="1540" MinWidth="1540" MaxWidth="1540">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="52" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="40" />
+            <RowDefinition Height="45" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <ComboBox Name="Notes" Margin="10"></ComboBox>
             <ComboBox Name="Scales" Margin="10"></ComboBox>
             <Button Margin="10" Click="Button_Click" Name="OkButton">OK</Button>
             <StackPanel Name="SelectorsPanel" Orientation="Horizontal">
-                <CheckBox Name="ShowIntervals" Margin="8" VerticalContentAlignment="Center" Checked="ShowNoteInterval_Checked" Unchecked="ShowNoteInterval_Checked">Show Intervals</CheckBox>
+                <CheckBox Name="ShowIntervals" Margin="8" VerticalContentAlignment="Center" Checked="ShowNoteInterval_Checked" Unchecked="ShowNoteInterval_Checked">Show Interval Names</CheckBox>
                 <CheckBox Name="LeftHanded" Margin="8" VerticalContentAlignment="Center" Checked="LeftHanded_Checked" Unchecked="LeftHanded_Checked">Left Handed</CheckBox>
                 <CheckBox Name="FlipNut" Margin="8" VerticalContentAlignment="Center" Checked="FlipNut_Checked" Unchecked="FlipNut_Checked">Flip Nut</CheckBox>
+                <Label Content="Show Strings:" Margin="8" VerticalContentAlignment="Center" />
                 <CheckBox Name="String1" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">1st</CheckBox>
                 <CheckBox Name="String2" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">2nd</CheckBox>
                 <CheckBox Name="String3" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">3rd</CheckBox>
                 <CheckBox Name="String4" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">4th</CheckBox>
                 <CheckBox Name="String5" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">5th</CheckBox>
                 <CheckBox Name="String6" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">6th</CheckBox>
-                <StackPanel Name="DegreeSelector" Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Filter Intervals:" Margin="8" VerticalContentAlignment="Center" />
+                    <ComboBox Name="IntervalFilter">
+                        <ComboBoxItem Content="" />
+                        <ComboBoxItem Content="Triad" />
+                        <ComboBoxItem Content="Tetrad (7th)" />
+                        <ComboBoxItem Content="Third" />
+                        <ComboBoxItem Content="Forth" />
+                        <ComboBoxItem Content="Fifth" />
+                        <ComboBoxItem Content="Sixth" />
+                        <ComboBoxItem Content="Seventh" />
+                    </ComboBox>
+                    <Label Content="From:" Margin="8" VerticalContentAlignment="Center" />
+                    <ComboBox Name="IntervalFrom">
+                        <ComboBoxItem Content="Root" />
+                        <ComboBoxItem Content="2nd" />
+                        <ComboBoxItem Content="3rd" />
+                        <ComboBoxItem Content="4th" />
+                        <ComboBoxItem Content="5th" />
+                        <ComboBoxItem Content="6th" />
+                        <ComboBoxItem Content="7th" />
+                    </ComboBox>
+                    <CheckBox Name="HideScale" Margin="8" VerticalContentAlignment="Center">Hide scale</CheckBox>
+                    <Button Margin="10" Click="FilterButton_Click" Name="FilterButton">Filter</Button>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
+        <StackPanel Orientation="Horizontal" Height="40" Grid.Row="1">
+            <StackPanel Name="DegreeSelector" Orientation="Horizontal" Height="40" />
+        </StackPanel>
         <wpft:RangeSlider
             Name="FretRange"
-            Grid.Row="1"
+            Grid.Row="2"
             Margin="10"
             Minimum="0"
             Maximum="24"
@@ -50,9 +78,9 @@
             Step="1"
             LowerValueChanged="RefreshFretNotes"
             HigherValueChanged="RefreshFretNotes" />
-        <StackPanel Name="Fretboard" Grid.Row="2"></StackPanel>
-        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="3">
-            <TextBlock Margin="10 0 0 0">
+        <StackPanel Name="Fretboard" Grid.Row="3"></StackPanel>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="4">
+            <TextBlock Margin="10 2 0 0">
                 <Hyperlink NavigateUri="https://github.com/fredimachado/GuitarHub" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/fredimachado/GuitarHub</Hyperlink>
             </TextBlock>
         </StackPanel>
