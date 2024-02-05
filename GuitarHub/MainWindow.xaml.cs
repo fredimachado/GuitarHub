@@ -190,6 +190,7 @@ namespace GuitarHub
 
             Fretboard.Children.Clear();
 
+            ShowFretNumbers(fretboard);
             ShowStringLinesAndFrets(fretboard);
 
             for (int i = 0; i < fretboard.StringNotes.Count; i++)
@@ -252,6 +253,23 @@ namespace GuitarHub
             }
 
             Fretboard.Children.Add(fretMarks);
+        }
+
+        private void ShowFretNumbers(Fretboard fretboard)
+        {
+            var margin = new Thickness(10, 0, 10, 0);
+            var fretNumbers = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                FlowDirection = LeftHanded.IsChecked.Value ? FlowDirection.RightToLeft : FlowDirection.LeftToRight
+            };
+
+            for (int i = 0; i < fretboard.NumberOfFrets; i++)
+            {
+                AddLabel(margin, fretNumbers, i.ToString(), uid: $"fret{i}");
+            }
+
+            Fretboard.Children.Add(fretNumbers);
         }
 
         private void AddNote(ScaleNote scaleNote, ScaleBase scale, Thickness margin, int stringNumber, int fretNumber, StackPanel stringStackPanel)

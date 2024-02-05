@@ -37,7 +37,7 @@ namespace GuitarHub.Tests
             Thread.Sleep(200);
 
             var note = session.FindElementByName("A");
-            var showIntervals = session.FindElementByName("Show Intervals");
+            var showIntervals = session.FindElementByName("Show Interval Names");
 
             showIntervals.Click();
             Thread.Sleep(200);

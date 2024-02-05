@@ -14,7 +14,7 @@
         Foreground="{DynamicResource PrimaryForegroundColorBrush}"
         Background="{DynamicResource WindowBackground}"
         Closing="Window_Closing"
-        Title="Guitar Hub v{version} by Fredi Machado" Height="560" MinHeight="560" MaxHeight="560" Width="1540" MinWidth="1540" MaxWidth="1540">
+        Title="Guitar Hub v{version} by Fredi Machado" Height="585" MinHeight="585" MaxHeight="585" Width="1540" MinWidth="1540" MaxWidth="1540">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
