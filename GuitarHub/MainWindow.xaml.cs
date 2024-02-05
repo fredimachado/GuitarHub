@@ -1,4 +1,5 @@
-﻿using Music.Core;
+﻿using GuitarHub.Properties;
+using Music.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -52,6 +53,13 @@ namespace GuitarHub
 
             FillNotes();
             FillScales();
+
+            LoadSettings();
+
+            LeftHanded.Checked += (object sender, RoutedEventArgs e) => OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            LeftHanded.Unchecked += (object sender, RoutedEventArgs e) => OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            FlipNut.Checked += (object sender, RoutedEventArgs e) => OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            FlipNut.Unchecked += (object sender, RoutedEventArgs e) => OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void FillNotes()
@@ -113,21 +121,8 @@ namespace GuitarHub
             (IntervalFrom.Items[6] as ComboBoxItem).IsEnabled = currentScale.Notes.Length == 7;
 
             FilterButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        }
 
-        private void LeftHanded_Checked(object sender, RoutedEventArgs e)
-        {
-            OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        }
-
-        private void FlipNut_Checked(object sender, RoutedEventArgs e)
-        {
-            OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-        }
-
-        private void ShowString(object sender, RoutedEventArgs e)
-        {
-            
+            SaveSettings();
         }
 
         private void ShowNoteInterval_Checked(object sender, RoutedEventArgs e)
@@ -528,6 +523,28 @@ namespace GuitarHub
                     button.Opacity = 0;
                 }
             };
+        }
+
+        private void SaveSettings()
+        {
+            Settings.Default.Note = Notes.SelectionBoxItem as string;
+            Settings.Default.Scale = Scales.SelectionBoxItem as string;
+            Settings.Default.LeftHanded = LeftHanded.IsChecked.Value;
+            Settings.Default.FlipNut = FlipNut.IsChecked.Value;
+            Settings.Default.Save();
+        }
+
+        private void LoadSettings()
+        {
+            Notes.SelectedIndex = Notes.Items.IndexOf(Notes.Items.OfType<ComboBoxItem>().FirstOrDefault(x => x.Content as string == Settings.Default.Note));
+            Scales.SelectedIndex = Scales.Items.IndexOf(Scales.Items.OfType<ComboBoxItem>().FirstOrDefault(x => x.Content as string == Settings.Default.Scale));
+            LeftHanded.IsChecked = Settings.Default.LeftHanded;
+            FlipNut.IsChecked = Settings.Default.FlipNut;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SaveSettings();
         }
     }
 

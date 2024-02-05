@@ -13,6 +13,7 @@
         TextOptions.TextRenderingMode="Auto"
         Foreground="{DynamicResource PrimaryForegroundColorBrush}"
         Background="{DynamicResource WindowBackground}"
+        Closing="Window_Closing"
         Title="Guitar Hub v{version} by Fredi Machado" Height="560" MinHeight="560" MaxHeight="560" Width="1540" MinWidth="1540" MaxWidth="1540">
     <Grid>
         <Grid.RowDefinitions>
@@ -28,15 +29,15 @@
             <Button Margin="10" Click="Button_Click" Name="OkButton">OK</Button>
             <StackPanel Name="SelectorsPanel" Orientation="Horizontal">
                 <CheckBox Name="ShowIntervals" Margin="8" VerticalContentAlignment="Center" Checked="ShowNoteInterval_Checked" Unchecked="ShowNoteInterval_Checked">Show Interval Names</CheckBox>
-                <CheckBox Name="LeftHanded" Margin="8" VerticalContentAlignment="Center" Checked="LeftHanded_Checked" Unchecked="LeftHanded_Checked">Left Handed</CheckBox>
-                <CheckBox Name="FlipNut" Margin="8" VerticalContentAlignment="Center" Checked="FlipNut_Checked" Unchecked="FlipNut_Checked">Flip Nut</CheckBox>
+                <CheckBox Name="LeftHanded" Margin="8" VerticalContentAlignment="Center">Left Handed</CheckBox>
+                <CheckBox Name="FlipNut" Margin="8" VerticalContentAlignment="Center">Flip Nut</CheckBox>
                 <Label Content="Show Strings:" Margin="8" VerticalContentAlignment="Center" />
-                <CheckBox Name="String1" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">1st</CheckBox>
-                <CheckBox Name="String2" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">2nd</CheckBox>
-                <CheckBox Name="String3" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">3rd</CheckBox>
-                <CheckBox Name="String4" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">4th</CheckBox>
-                <CheckBox Name="String5" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">5th</CheckBox>
-                <CheckBox Name="String6" Margin="8" VerticalContentAlignment="Center" Checked="ShowString" Unchecked="ShowString" IsChecked="True">6th</CheckBox>
+                <CheckBox Name="String1" Margin="8" VerticalContentAlignment="Center" IsChecked="True">1st</CheckBox>
+                <CheckBox Name="String2" Margin="8" VerticalContentAlignment="Center" IsChecked="True">2nd</CheckBox>
+                <CheckBox Name="String3" Margin="8" VerticalContentAlignment="Center" IsChecked="True">3rd</CheckBox>
+                <CheckBox Name="String4" Margin="8" VerticalContentAlignment="Center" IsChecked="True">4th</CheckBox>
+                <CheckBox Name="String5" Margin="8" VerticalContentAlignment="Center" IsChecked="True">5th</CheckBox>
+                <CheckBox Name="String6" Margin="8" VerticalContentAlignment="Center" IsChecked="True">6th</CheckBox>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Filter Intervals:" Margin="8" VerticalContentAlignment="Center" />
                     <ComboBox Name="IntervalFilter">
